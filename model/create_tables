@@ -1,0 +1,12 @@
+-- Create the staging table
+CREATE TABLE STAGING_TABLE (
+    user_id VARCHAR,
+    session_id VARCHAR,
+    event_id VARCHAR,
+    event_type VARCHAR,
+    product_id VARCHAR,
+    brand VARCHAR,
+    category_code VARCHAR,
+    price FLOAT,
+    event_time TIMESTAMP
+);

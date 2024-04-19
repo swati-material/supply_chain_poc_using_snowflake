@@ -1,0 +1,68 @@
+-- Stored procedure 
+CREATE OR REPLACE PROCEDURE create_tables_in_schema(
+    database_name VARCHAR,
+    schema_name VARCHAR
+)
+RETURNS STRING
+LANGUAGE SQL
+AS
+$$
+DECLARE
+    sql_statement STRING;
+BEGIN
+    -- Create User table
+    sql_statement := 'CREATE TABLE ' || database_name || '.' || schema_name || '.User (
+        user_id VARCHAR,
+        PRIMARY KEY (user_id)
+    )';
+    EXECUTE IMMEDIATE sql_statement;
+
+    -- Create Session table
+    sql_statement := 'CREATE TABLE ' || database_name || '.' || schema_name || '.Session (
+        session_id VARCHAR,
+        user_id VARCHAR,
+        event_time TIMESTAMP,
+        PRIMARY KEY (session_id),
+        FOREIGN KEY (user_id) REFERENCES ' || database_name || '.' || schema_name || '.User(user_id)
+    )';
+    EXECUTE IMMEDIATE sql_statement;
+
+    -- Create ShoppingCart table
+    sql_statement := 'CREATE TABLE ' || database_name || '.' || schema_name || '.ShoppingCart (
+        cart_id VARCHAR,
+        session_id VARCHAR,
+        event_time TIMESTAMP,
+        PRIMARY KEY (cart_id),
+        FOREIGN KEY (session_id) REFERENCES ' || database_name || '.' || schema_name || '.Session(session_id)
+    )';
+    EXECUTE IMMEDIATE sql_statement;
+
+    -- Create Product table
+    sql_statement := 'CREATE TABLE ' || database_name || '.' || schema_name || '.Product (
+        product_id VARCHAR,
+        brand VARCHAR,
+        category_code VARCHAR,
+        price FLOAT,
+        PRIMARY KEY (product_id)
+    )';
+    EXECUTE IMMEDIATE sql_statement;
+
+    -- Create Event table
+    sql_statement := 'CREATE TABLE ' || database_name || '.' || schema_name || '.Event (
+        event_id VARCHAR,
+        session_id VARCHAR,
+        event_type VARCHAR,
+        product_id VARCHAR,
+        event_time TIMESTAMP,
+        PRIMARY KEY (event_id),
+        FOREIGN KEY (session_id) REFERENCES ' || database_name || '.' || schema_name || '.Session(session_id),
+        FOREIGN KEY (product_id) REFERENCES ' || database_name || '.' || schema_name || '.Product(product_id)
+    )';
+    EXECUTE IMMEDIATE sql_statement;
+
+    RETURN 'Tables created successfully';
+END;
+$$;
+
+-- Call after runnign stored procedure
+CALL create_tables_in_schema('marketing_sales_poc', 'marketing_sales_data_schema');
